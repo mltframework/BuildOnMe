@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QFileDialog>
+#include <QVBoxLayout>
 #include <Mlt.h>
 
 MainWindow::MainWindow (QWidget *parent)
@@ -8,6 +9,9 @@ MainWindow::MainWindow (QWidget *parent)
     , ui (new Ui::MainWindow)
     , m_producer (0)
     , m_consumer (0)
+#ifdef Q_WS_MAC
+    , m_gl (new GLWidget (this))
+#endif
 {
     // Create the UI.
     ui->setupUi (this);
@@ -32,6 +36,9 @@ MainWindow::~MainWindow ()
     delete m_producer;
     delete m_profile;
     Mlt::Factory::close();
+#ifdef Q_WS_MAC
+    delete m_gl;
+#endif
     delete ui;
 }
 
@@ -43,7 +50,19 @@ void MainWindow::initializeMlt ()
     Mlt::Factory::init (NULL);
 
     m_profile = new Mlt::Profile ("square_ntsc_wide");
+
+#ifdef Q_WS_MAC
+    m_consumer = new Mlt::Consumer (*m_profile, "sdl_audio");
+    m_gl->setImageAspectRatio (m_profile->dar ());
+    QVBoxLayout *layout = new QVBoxLayout;
+    layout->addWidget (m_gl);
+    layout->setMargin (0);
+    ui->centralWidget->setLayout (layout);
+    m_consumer->listen ("consumer-frame-show", this, (mlt_listener) on_frame_show);
+    QObject::connect (this, SIGNAL (showImageSignal (QImage)), m_gl, SLOT (showImage(QImage)));
+#else
     m_consumer = new Mlt::Consumer (*m_profile, "sdl_preview");
+#endif
 
     // Embed the SDL window in our GUI.
     m_consumer->set ("window_id", (int) ui->centralWidget->winId());
@@ -92,9 +111,29 @@ void MainWindow::pause ()
 	ui->statusBar->showMessage (tr("Paused"));
 }
 
-void MainWindow::resizeEvent (QResizeEvent * event)
+void MainWindow::resizeEvent (QResizeEvent*)
 {
 	if (m_consumer)
 		// When paused this tells sdl_still to update.
 		m_consumer->set ("refresh", 1);
 }
+
+#ifdef Q_WS_MAC
+// MLT consumer-frame-show event handler
+void MainWindow::on_frame_show (mlt_consumer, MainWindow* self, mlt_frame frame_ptr)
+{
+    Mlt::Frame frame (frame_ptr);
+    self->showFrame (frame);
+}
+
+void MainWindow::showFrame (Mlt::Frame& frame)
+{
+    mlt_image_format format = mlt_image_rgb24a;
+    int width = 0;
+    int height = 0;
+    const uchar* image = frame.get_image (format, width, height);
+    QImage qimage (width, height, QImage::Format_ARGB32);
+    memcpy (qimage.scanLine(0), image, width * height * 4);
+    emit showImageSignal (qimage);
+}
+#endif

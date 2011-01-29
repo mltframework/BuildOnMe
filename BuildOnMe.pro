@@ -17,6 +17,11 @@ HEADERS  += mainwindow.h
 
 FORMS    += mainwindow.ui
 
+mac {
+    QT += opengl
+    SOURCES += glwidget.cpp
+    HEADERS += glwidget.h
+}
 win32 {
     INCLUDEPATH += include/mlt++ include/mlt
     LIBS += -Llib -lmlt++ -lmlt
