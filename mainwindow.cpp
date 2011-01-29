@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 #include <QFileDialog>
 #include <QVBoxLayout>
+#include <QPalette>
 #include <Mlt.h>
 
 MainWindow::MainWindow (QWidget *parent)
@@ -67,6 +68,8 @@ void MainWindow::initializeMlt ()
     // Embed the SDL window in our GUI.
     m_consumer->set ("window_id", (int) ui->centralWidget->winId());
     m_consumer->set ("play.audio_buffer", 4096);
+    QPalette pal;
+    m_consumer->set ("window_background", pal.color (QPalette::Window).name().toAscii().constData());
 
     // Load a color producer to clear the video region with black.
     m_producer = new Mlt::Producer (*m_profile, "color:");
