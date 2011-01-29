@@ -82,43 +82,43 @@ void MainWindow::initializeMlt ()
 
 void MainWindow::openVideo ()
 {
-	QString filename = QFileDialog::getOpenFileName (this);
-	if (!filename.isNull())
-	{
-		Mlt::Producer * producer = new Mlt::Producer (*m_profile, filename.toUtf8().constData());
-		if (producer->is_valid())
-		{
-			m_consumer->stop();
-			m_consumer->connect (*producer);
-			delete m_producer;
-			m_producer = producer;
-			m_consumer->start();
-			play();
-		}
-	}
-	// If file invalid, then on some platforms the dialog messes up SDL.
-	m_consumer->set ("refresh", 1);
+    QString filename = QFileDialog::getOpenFileName (this);
+    if (!filename.isNull())
+    {
+        Mlt::Producer * producer = new Mlt::Producer (*m_profile, filename.toUtf8().constData());
+        if (producer->is_valid())
+        {
+            m_consumer->stop();
+            m_consumer->connect (*producer);
+            delete m_producer;
+            m_producer = producer;
+            m_consumer->start();
+            play();
+        }
+    }
+    // If file invalid, then on some platforms the dialog messes up SDL.
+    m_consumer->set ("refresh", 1);
 }
 
 void MainWindow::play ()
 {
-	m_producer->set_speed (1.0);
-	// If we are paused, then we need to "unlock" sdl_still.
-	m_consumer->set ("refresh", 1);
-	ui->statusBar->showMessage (tr("Playing"));
+    m_producer->set_speed (1.0);
+    // If we are paused, then we need to "unlock" sdl_still.
+    m_consumer->set ("refresh", 1);
+    ui->statusBar->showMessage (tr("Playing"));
 }
 
 void MainWindow::pause ()
 {
-	m_producer->set_speed (0.0);
-	ui->statusBar->showMessage (tr("Paused"));
+    m_producer->set_speed (0.0);
+    ui->statusBar->showMessage (tr("Paused"));
 }
 
 void MainWindow::resizeEvent (QResizeEvent*)
 {
-	if (m_consumer)
-		// When paused this tells sdl_still to update.
-		m_consumer->set ("refresh", 1);
+    if (m_consumer)
+        // When paused this tells sdl_still to update.
+        m_consumer->set ("refresh", 1);
 }
 
 #ifdef Q_WS_MAC

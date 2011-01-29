@@ -93,7 +93,7 @@ void GLWidget::paintGL ()
     if (m_texture)
     {
 #ifdef Q_WS_MAC
-		glClear (GL_COLOR_BUFFER_BIT);
+        glClear (GL_COLOR_BUFFER_BIT);
 #endif
         glEnable (GL_TEXTURE_RECTANGLE_EXT);
         glBegin (GL_QUADS);
