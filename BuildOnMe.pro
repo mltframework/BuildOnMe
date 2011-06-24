@@ -29,3 +29,6 @@ win32 {
     CONFIG += link_pkgconfig
     PKGCONFIG += mlt++
 }
+
+RESOURCES += \
+    resources.qrc

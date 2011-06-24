@@ -46,8 +46,8 @@
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionOpen">
    <property name="icon">
-    <iconset>
-     <normaloff>icons/document-open.svg</normaloff>icons/document-open.svg</iconset>
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/icons/document-open.svg</normaloff>:/icons/icons/document-open.svg</iconset>
    </property>
    <property name="text">
     <string>&amp;Open...</string>
@@ -72,8 +72,8 @@
   </action>
   <action name="actionPlay">
    <property name="icon">
-    <iconset>
-     <normaloff>icons/media-playback-start.svg</normaloff>icons/media-playback-start.svg</iconset>
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/icons/media-playback-start.svg</normaloff>:/icons/icons/media-playback-start.svg</iconset>
    </property>
    <property name="text">
     <string>Play</string>
@@ -87,8 +87,8 @@
   </action>
   <action name="actionPause">
    <property name="icon">
-    <iconset>
-     <normaloff>icons/media-playback-pause.svg</normaloff>icons/media-playback-pause.svg</iconset>
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/icons/media-playback-pause.svg</normaloff>:/icons/icons/media-playback-pause.svg</iconset>
    </property>
    <property name="text">
     <string>Pause</string>
@@ -102,7 +102,9 @@
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <resources/>
+ <resources>
+  <include location="resources.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>actionExit</sender>
