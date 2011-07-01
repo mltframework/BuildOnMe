@@ -60,7 +60,6 @@ public slots:
     void openVideo ();
     void play ();
     void pause ();
-    void onConsumerCreated (double aspectRatio);
     void onShowFrame (void* frame, unsigned position);
 
 };

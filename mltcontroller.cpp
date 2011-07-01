@@ -72,8 +72,6 @@ int MltController::open (const char* url, const char* profile)
         m_consumer = new Mlt::Consumer (*m_profile, "sdl_preview");
 #endif
         if (m_consumer->is_valid ()) {
-            emit consumerCreated (m_profile->dar());
-
             // Embed the SDL window in our GUI.
             QWidget* widget = qobject_cast<QWidget*> (parent());
             m_consumer->set ("window_id", (int) widget->winId());
@@ -140,12 +138,13 @@ void MltController::setVolume (double volume)
 
 QImage MltController::getImage (void* frame_ptr)
 {
-    Mlt::Frame frame ((mlt_frame) frame_ptr);
+    Mlt::Frame* frame = static_cast<Mlt::Frame*> (frame_ptr);
     int width = 0;
     int height = 0;
     // TODO: change the format if using a pixel shader
     mlt_image_format format = mlt_image_rgb24a;
-    const uint8_t* image = frame.get_image (format, width, height);
+    const uint8_t* image = frame->get_image (format, width, height);
+    delete frame;
     QImage qimage (width, height, QImage::Format_ARGB32);
     memcpy (qimage.scanLine(0), image, width * height * 4);
     return qimage;
@@ -162,5 +161,6 @@ void MltController::onWindowResize ()
 void MltController::on_frame_show (mlt_consumer, void* self, mlt_frame frame_ptr)
 {
     MltController* controller = static_cast<MltController*> (self);
-    emit controller->frameReceived (frame_ptr, (unsigned) mlt_frame_get_position (frame_ptr));
+    Mlt::Frame* frame = new Mlt::Frame (frame_ptr);
+    emit controller->frameReceived (frame, (unsigned) mlt_frame_get_position (frame_ptr));
 }

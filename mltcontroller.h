@@ -51,7 +51,6 @@ public:
         { return m_profile; }
 
 signals:
-    void consumerCreated (double aspectRatio);
     /** This method will be called each time a new frame is available.
      * @param frame pass this opaque frame pointer to getImage()
      * @param position the frame number of this frame representing time

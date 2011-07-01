@@ -48,9 +48,12 @@ MainWindow::MainWindow (QWidget *parent)
     // Create MLT controller and connect its signals.
     mlt = new MltController (ui->centralWidget);
     connect (mlt, SIGNAL(frameReceived (void*, unsigned)), this, SLOT(onShowFrame (void*, unsigned)));
-    connect (mlt, SIGNAL(consumerCreated (double)), this, SLOT(onConsumerCreated (double)));
 #ifdef Q_WS_MAC
     gl = new GLWidget (this);
+    QVBoxLayout *layout = new QVBoxLayout;
+    layout->addWidget (gl);
+    layout->setMargin (0);
+    ui->centralWidget->setLayout (layout);
     connect (this, SIGNAL (showImageSignal (QImage)), gl, SLOT (showImage(QImage)));
 #endif
 }
@@ -81,8 +84,12 @@ void MainWindow::openVideo ()
     QString filename = QFileDialog::getOpenFileName (this);
     if (!filename.isNull())
     {
-        if (!mlt->open (filename.toUtf8().constData()))
+        if (!mlt->open (filename.toUtf8().constData())) {
+#ifdef Q_WS_MAC
+            gl->setImageAspectRatio (mlt->profile()->dar());
+#endif
             play();
+        }
     }
     // If file invalid, then on some platforms the dialog messes up SDL.
     mlt->onWindowResize ();
@@ -114,13 +121,6 @@ void MainWindow::forceResize()
     int height = ui->centralWidget->height();
     ui->centralWidget->resize (width - 1, height - 1);
     ui->centralWidget->resize (width, height);
-}
-
-void MainWindow::onConsumerCreated (double aspectRatio)
-{
-#ifdef Q_WS_MAC
-    gl->setImageAspectRatio (aspectRatio);
-#endif
 }
 
 void MainWindow::onShowFrame (void* frame, unsigned position)
