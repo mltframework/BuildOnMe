@@ -21,11 +21,16 @@
  */
 
 #include <QtGui/QApplication>
+#include <QtCore/QDir>
 #include "mainwindow.h"
 
 int main(int argc, char *argv[])
 {
     QApplication a (argc, argv);
+    QDir dir (QApplication::applicationDirPath());
+    dir.cd ("lib");
+    dir.cd ("qt4");
+    QCoreApplication::addLibraryPath(dir.absolutePath());
     MainWindow w;
     w.show ();
     w.initializeMlt ();
